@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SipStreak – HydroHero Hunt | Gamified Hydration & Team Competition</title>
+  <!-- Google Fonts: Inter & Outfit for modern fluid typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Ambient Floating Water Droplets Background Effect -->
+  <div class="water-droplets-bg" aria-hidden="true">
+    <span class="bubble b1"></span>
+    <span class="bubble b2"></span>
+    <span class="bubble b3"></span>
+    <span class="bubble b4"></span>
+    <span class="bubble b5"></span>
+    <span class="bubble b6"></span>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- APP CONTAINER -->
+  <div id="app" class="app-root">
+
+    <!-- ========================================== -->
+    <!-- 1. AUTHENTICATION / LOGIN & SIGNUP SCREEN -->
+    <!-- ========================================== -->
+    <section id="auth-screen" class="screen auth-screen active">
+      <div class="auth-wrapper">
+        <!-- Brand Header -->
+        <div class="brand-hero text-center">
+          <div class="brand-logo-wrap">
+            <div class="brand-water-drop-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="drop-svg">
+                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" fill="url(#dropGradAuth)"/>
+                <defs>
+                  <linearGradient id="dropGradAuth" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#38bdf8"/>
+                    <stop offset="100%" stop-color="#0284c7"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="drop-pulse"></div>
+            </div>
+            <span class="app-badge">Team Hydration Challenge</span>
+          </div>
+          <h1 class="brand-title">SipStreak</h1>
+          <p class="brand-subtitle">HydroHero Hunt</p>
+          <p class="brand-tagline">Track daily hydration, rally your team, and climb the live hydro leaderboard!</p>
+        </div>
+
+        <!-- Auth Card -->
+        <div class="auth-card">
+          <!-- Auth Tabs -->
+          <div class="auth-tabs" role="tablist">
+            <button id="tab-login" class="tab-btn active" role="tab" aria-selected="true" onclick="switchAuthMode('login')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+              Login
+            </button>
+            <button id="tab-signup" class="tab-btn" role="tab" aria-selected="false" onclick="switchAuthMode('signup')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+              Sign Up
+            </button>
+          </div>
+
+          <!-- Auth Form -->
+          <form id="auth-form" class="auth-form" onsubmit="handleAuthSubmit(event)">
+            <!-- Name Field (Visible for Signup, optional for quick login) -->
+            <div id="field-group-name" class="form-group hidden">
+              <label for="input-name" class="form-label">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Full Name
+              </label>
+              <div class="input-wrapper">
+                <input type="text" id="input-name" placeholder="e.g. Alex Rivers" autocomplete="name">
+              </div>
+            </div>
+
+            <!-- Email Field -->
+            <div class="form-group">
+              <label for="input-email" class="form-label">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                Email Address
+              </label>
+              <div class="input-wrapper">
+                <input type="email" id="input-email" required placeholder="alex@hydrohero.com" autocomplete="email">
+              </div>
+            </div>
+
+            <!-- Password Field -->
+            <div class="form-group">
+              <label for="input-password" class="form-label">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Password
+              </label>
+              <div class="input-wrapper">
+                <input type="password" id="input-password" required placeholder="Enter password (at least 4 chars)" autocomplete="current-password">
+              </div>
+            </div>
+
+            <!-- Weight Field (Used for Weight × 35ml Hydration Calculation) -->
+            <div id="field-group-weight" class="form-group hidden">
+              <div class="label-with-hint">
+                <label for="input-weight" class="form-label">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  Body Weight (kg)
+                </label>
+                <span class="calc-formula-tag">Goal: Weight × 35ml</span>
+              </div>
+              <div class="input-wrapper">
+                <input type="number" id="input-weight" min="30" max="200" value="70" placeholder="70">
+                <span class="input-unit">kg</span>
+              </div>
+              <p class="field-help">Your personalized daily target will be <strong id="weight-preview-calc">2,450 ml</strong>.</p>
+            </div>
+
+            <!-- Primary Action Buttons -->
+            <div class="form-actions">
+              <button type="submit" id="btn-auth-submit" class="btn btn-primary btn-block btn-lg">
+                <span id="btn-auth-text">Login to Dashboard</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </button>
+            </div>
+          </form>
+
+          <!-- Quick Demo User Switcher -->
+          <div class="demo-account-box">
+            <div class="demo-box-header">
+              <span class="demo-title">⚡ Quick Demo Login (Instant Access)</span>
+            </div>
+            <p class="demo-desc">Select a realistic pre-loaded HydroHero to immediately explore the live dashboard & team leaderboard:</p>
+            <div class="demo-pills-grid" id="demo-user-pills">
+              <!-- Dynamically populated sample user buttons -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- MAIN APPLICATION DASHBOARD (POST-LOGIN)   -->
+    <!-- ========================================== -->
+    <div id="main-app" class="main-app hidden">
+      <!-- Top Navigation Bar -->
+      <header class="top-navbar">
+        <div class="nav-container">
+          <div class="nav-brand">
+            <div class="brand-icon-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" fill="url(#dropGradNav)"/>
+                <defs>
+                  <linearGradient id="dropGradNav" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#38bdf8"/>
+                    <stop offset="100%" stop-color="#0284c7"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div class="brand-text">
+              <span class="brand-title-sm">SipStreak</span>
+              <span class="brand-sub-sm">HydroHero Hunt</span>
+            </div>
+          </div>
+
+          <!-- Section Nav Links -->
+          <nav class="nav-tabs">
+            <a href="#dashboard-section" class="nav-link active" onclick="scrollToSection('dashboard-section', event)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+              My Hydration
+            </a>
+            <a href="#team-section" class="nav-link" onclick="scrollToSection('team-section', event)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              My Team
+            </a>
+            <a href="#leaderboard-section" class="nav-link" onclick="scrollToSection('leaderboard-section', event)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+              Live Leaderboard
+            </a>
+          </nav>
+
+          <!-- User Menu & Logout -->
+          <div class="user-meta-header">
+            <div class="user-badge-header">
+              <div class="user-avatar-circle" id="header-user-avatar">AR</div>
+              <div class="user-info-text">
+                <span class="user-name-header" id="header-user-name">Alex Rivers</span>
+                <span class="user-team-header" id="header-user-team">Aqua Avengers</span>
+              </div>
+            </div>
+            <button class="btn btn-outline-light btn-sm" onclick="handleLogout()" title="Log out">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Layout Body -->
+      <main class="main-content-layout">
+        
+        <!-- Welcome Hero Banner -->
+        <section class="welcome-banner">
+          <div class="welcome-text">
+            <span class="greeting-badge">
+              <span class="pulse-dot"></span>
+              HydroHero Active
+            </span>
+            <h2 class="welcome-title">Welcome back, <span id="dash-user-name-banner" class="highlight-cyan">Alex</span>! 💧</h2>
+            <p class="welcome-desc">Every sip counts towards your wellness and propels your team up the live leaderboard.</p>
+          </div>
+          <div class="welcome-date-card">
+            <div class="date-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <div>
+              <span class="date-label">Today's Streak</span>
+              <span class="date-value" id="current-date-display">Today</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- 2. PERSONAL HYDRATION DASHBOARD & LOGGING CARDS -->
+        <!-- ============================================== -->
+        <section id="dashboard-section" class="content-section">
+          <div class="section-header">
+            <div class="section-title-wrap">
+              <div class="section-icon-badge">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+              </div>
+              <div>
+                <h3 class="section-title">Personal Hydration Dashboard</h3>
+                <p class="section-subtitle">Real-time tracking powered by your body weight formula</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            
+            <!-- Left Card: Circular Progress Indicator & Goal Stats -->
+            <div class="card card-hero-gauge">
+              <div class="gauge-card-header">
+                <div>
+                  <h4 class="card-title">Daily Hydration Progress</h4>
+                  <span class="formula-pill">Formula: Weight (<span id="gauge-user-weight">70</span>kg) × 35ml</span>
+                </div>
+                <button class="btn-icon-subtle" onclick="openWeightModal()" title="Edit Body Weight">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </button>
+              </div>
+
+              <!-- Animated Circular Hydration Indicator -->
+              <div class="gauge-center-wrapper">
+                <div class="circular-progress-container">
+                  <svg class="circular-progress-svg" viewBox="0 0 200 200">
+                    <defs>
+                      <linearGradient id="progressGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#38bdf8" />
+                        <stop offset="50%" stop-color="#0284c7" />
+                        <stop offset="100%" stop-color="#06b6d4" />
+                      </linearGradient>
+                      <filter id="glowEffect" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0284c7" flood-opacity="0.3"/>
+                      </filter>
+                    </defs>
+                    <!-- Background Circle -->
+                    <circle class="circle-bg" cx="100" cy="100" r="82" />
+                    <!-- Foreground Animated Progress Circle -->
+                    <circle id="progress-circle-bar" class="circle-progress" cx="100" cy="100" r="82" />
+                  </svg>
+
+                  <!-- Inner Metric Content -->
+                  <div class="gauge-inner-content">
+                    <div class="gauge-water-drop">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" fill="#0284c7"/>
+                      </svg>
+                    </div>
+                    <div class="gauge-percentage-wrap">
+                      <span id="gauge-percentage-text" class="gauge-percentage-num">0%</span>
+                    </div>
+                    <span class="gauge-status-label" id="gauge-status-badge">Hydrating</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Stat Numbers Bar: Consumed vs Target vs Remaining -->
+              <div class="gauge-stats-row">
+                <div class="stat-pill-item">
+                  <span class="stat-pill-label">Daily Consumed</span>
+                  <div class="stat-pill-value">
+                    <span id="stat-consumed-ml" class="highlight-val">0</span>
+                    <span class="unit">ml</span>
+                  </div>
+                </div>
+
+                <div class="stat-pill-divider">/</div>
+
+                <div class="stat-pill-item">
+                  <span class="stat-pill-label">Daily Target</span>
+                  <div class="stat-pill-value">
+                    <span id="stat-target-ml">2,450</span>
+                    <span class="unit">ml</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Remaining Requirement Banner -->
+              <div id="remaining-water-card" class="remaining-water-card">
+                <div class="remaining-icon" id="remaining-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <div class="remaining-details">
+                  <span class="remaining-title">Remaining to Goal</span>
+                  <span class="remaining-number" id="stat-remaining-ml">2,450 ml to go!</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Card: 3. Water Logging Buttons & Quick Entry -->
+            <div class="card card-logging">
+              <div class="logging-card-header">
+                <div>
+                  <h4 class="card-title">Quick Water Logging</h4>
+                  <p class="card-subtitle">Log your water intake instantly with one tap</p>
+                </div>
+                <div class="quick-drop-pulse">
+                  <span class="drop-sparkle">💧</span>
+                </div>
+              </div>
+
+              <!-- Preset Quick Log Action Buttons -->
+              <div class="quick-log-buttons-grid">
+                <!-- +250ml Button -->
+                <button class="log-preset-btn" onclick="logWater(250)" id="btn-log-250">
+                  <div class="log-btn-icon-wrap glass-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M5 4h14l-2 15a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 4z"/>
+                      <line x1="4" y1="4" x2="20" y2="4"/>
+                      <path d="M7 10h10" stroke-dasharray="2 2"/>
+                    </svg>
+                  </div>
+                  <div class="log-btn-info">
+                    <span class="log-btn-amount">+250 ml</span>
+                    <span class="log-btn-label">Standard Glass</span>
+                  </div>
+                  <span class="log-btn-plus">+</span>
+                </button>
+
+                <!-- +500ml Button -->
+                <button class="log-preset-btn featured-log-btn" onclick="logWater(500)" id="btn-log-500">
+                  <div class="log-btn-icon-wrap bottle-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="8" y="2" width="8" height="4" rx="1"/>
+                      <path d="M9 6v2l-3 4v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-8l-3-4V6"/>
+                      <line x1="7" y1="15" x2="17" y2="15" stroke-dasharray="2 2"/>
+                    </svg>
+                  </div>
+                  <div class="log-btn-info">
+                    <span class="log-btn-amount">+500 ml</span>
+                    <span class="log-btn-label">Water Bottle</span>
+                  </div>
+                  <span class="log-btn-plus">+</span>
+                </button>
+
+                <!-- +750ml Button -->
+                <button class="log-preset-btn" onclick="logWater(750)" id="btn-log-750">
+                  <div class="log-btn-icon-wrap flask-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M10 2v4a4 4 0 0 1-2 3.46L4.5 12A3 3 0 0 0 3 14.6V19a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-4.4a3 3 0 0 0-1.5-2.6L16 9.46A4 4 0 0 1 14 6V2"/>
+                      <line x1="9" y1="2" x2="15" y2="2"/>
+                      <line x1="5" y1="16" x2="19" y2="16" stroke-dasharray="2 2"/>
+                    </svg>
+                  </div>
+                  <div class="log-btn-info">
+                    <span class="log-btn-amount">+750 ml</span>
+                    <span class="log-btn-label">Sport Flask</span>
+                  </div>
+                  <span class="log-btn-plus">+</span>
+                </button>
+              </div>
+
+              <!-- Custom Water Quantity Entry Form -->
+              <div class="custom-log-section">
+                <span class="custom-section-title">Or Enter Custom Water Quantity:</span>
+                <form id="custom-water-form" class="custom-log-form" onsubmit="handleCustomWaterLog(event)">
+                  <div class="custom-input-group">
+                    <div class="input-icon-left">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+                    </div>
+                    <input type="number" id="custom-water-input" min="10" max="3000" step="10" placeholder="e.g. 350" required>
+                    <span class="input-unit-tag">ml</span>
+                  </div>
+                  <button type="submit" class="btn btn-secondary" id="btn-custom-log">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <span>Log Water</span>
+                  </button>
+                </form>
+              </div>
+
+              <!-- Recent Activity & Reset for Today -->
+              <div class="recent-logs-tray">
+                <div class="logs-tray-header">
+                  <span class="logs-tray-title">Today's Log Entries:</span>
+                  <button class="btn-text-subtle" onclick="resetTodaysWater()" title="Reset water intake to 0 for testing">
+                    Reset Today
+                  </button>
+                </div>
+                <div id="recent-logs-list" class="recent-chips-list">
+                  <!-- Dynamically inserted recent logs -->
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+
+
+        <!-- ============================================== -->
+        <!-- 4. TEAM CREATION AND JOINING SECTION           -->
+        <!-- ============================================== -->
+        <section id="team-section" class="content-section">
+          <div class="section-header">
+            <div class="section-title-wrap">
+              <div class="section-icon-badge team-badge-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <div>
+                <h3 class="section-title">Hydro Squad & Team Center</h3>
+                <p class="section-subtitle">Collaborate in squads of 4–8 members to maximize team hydration</p>
+              </div>
+            </div>
+            
+            <!-- Quick Team Actions Header -->
+            <div class="team-header-actions">
+              <button class="btn btn-outline-primary btn-sm" onclick="openCreateTeamModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Create New Team
+              </button>
+              <button class="btn btn-primary btn-sm" onclick="openJoinTeamModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                Join with Team Code
+              </button>
+            </div>
+          </div>
+
+          <!-- Active Team Card View -->
+          <div id="current-team-view">
+            <!-- Populated via renderTeamView() in app.js -->
+          </div>
+        </section>
+
+
+        <!-- ============================================== -->
+        <!-- 5. LIVE TEAM LEADERBOARD SECTION               -->
+        <!-- ============================================== -->
+        <section id="leaderboard-section" class="content-section">
+          <div class="section-header">
+            <div class="section-title-wrap">
+              <div class="section-icon-badge trophy-badge-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+              </div>
+              <div>
+                <h3 class="section-title">Live Team Leaderboard</h3>
+                <p class="section-subtitle">Ranked dynamically by the average percentage of individual hydration targets achieved</p>
+              </div>
+            </div>
+            
+            <div class="live-pill-indicator">
+              <span class="live-beacon"></span>
+              Live Updates
+            </div>
+          </div>
+
+          <!-- Top 3 Podium Cards (Highlights 1st, 2nd, 3rd Positions) -->
+          <div class="podium-showcase" id="leaderboard-podium">
+            <!-- Dynamically rendered top 3 teams in 2nd, 1st, 3rd arrangement -->
+          </div>
+
+          <!-- Full Leaderboard Table / Card List -->
+          <div class="card card-leaderboard-table">
+            <div class="table-responsive">
+              <table class="leaderboard-table" id="leaderboard-table">
+                <thead>
+                  <tr>
+                    <th class="th-rank">Rank</th>
+                    <th class="th-team">Team Name & Code</th>
+                    <th class="th-members">Members (4-8)</th>
+                    <th class="th-total-water">Total Water</th>
+                    <th class="th-score">Hydration Score (Avg %)</th>
+                  </tr>
+                </thead>
+                <tbody id="leaderboard-tbody">
+                  <!-- Populated via renderLeaderboard() -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- App Footer -->
+      <footer class="app-footer">
+        <div class="footer-container">
+          <div class="footer-brand">
+            <span class="footer-logo">💧 SipStreak</span> – HydroHero Hunt
+          </div>
+          <p class="footer-text">Stay healthy, stay hydrated. All data persisted locally via browser LocalStorage.</p>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- MODALS                                     -->
+  <!-- ========================================== -->
+
+  <!-- Modal: Create Team -->
+  <div id="modal-create-team" class="modal-backdrop hidden" onclick="handleBackdropClick(event, 'modal-create-team')">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon-badge">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+          </div>
+          <div>
+            <h4 class="modal-title">Create a New Team</h4>
+            <p class="modal-subtitle">Found a hydration squad and invite 4–8 teammates</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="closeModal('modal-create-team')">&times;</button>
+      </div>
+
+      <form id="form-create-team" onsubmit="handleCreateTeamSubmit(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="input-team-name" class="form-label">Team Name</label>
+            <div class="input-wrapper">
+              <input type="text" id="input-team-name" required placeholder="e.g. Glacier Guardians" maxlength="32">
+            </div>
+            <p class="field-help">Choose an inspiring name for your squad.</p>
+          </div>
+
+          <div class="team-rule-note">
+            <div class="rule-icon">ℹ️</div>
+            <div>
+              <strong>Team Rules:</strong>
+              <p>Teams support <strong>4 to 8 members</strong>. A unique shareable Team Code will be automatically generated upon creation.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-light" onclick="closeModal('modal-create-team')">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <span>Create Squad</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Join Team -->
+  <div id="modal-join-team" class="modal-backdrop hidden" onclick="handleBackdropClick(event, 'modal-join-team')">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon-badge">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          </div>
+          <div>
+            <h4 class="modal-title">Join an Existing Team</h4>
+            <p class="modal-subtitle">Enter the unique team code provided by your team lead</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="closeModal('modal-join-team')">&times;</button>
+      </div>
+
+      <form id="form-join-team" onsubmit="handleJoinTeamSubmit(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="input-team-code" class="form-label">Unique Team Code</label>
+            <div class="input-wrapper">
+              <input type="text" id="input-team-code" required placeholder="e.g. AQUA-2041 or HYPE-3092" uppercase style="text-transform: uppercase;">
+            </div>
+            <p class="field-help">Try demo codes: <code>AQUA-2041</code>, <code>HYPE-3092</code>, <code>HERO-5510</code>, <code>WAVE-8844</code></p>
+          </div>
+
+          <div class="team-rule-note">
+            <div class="rule-icon">👥</div>
+            <div>
+              <strong>Squad Capacity:</strong>
+              <p>Teams accept between 4 and 8 members. If a team already has 8 members, it is full and cannot accept new members.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-light" onclick="closeModal('modal-join-team')">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <span>Join Team</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Update Body Weight -->
+  <div id="modal-weight" class="modal-backdrop hidden" onclick="handleBackdropClick(event, 'modal-weight')">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon-badge">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div>
+            <h4 class="modal-title">Update Body Weight</h4>
+            <p class="modal-subtitle">Recalculate daily hydration goal: Weight (kg) × 35ml</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="closeModal('modal-weight')">&times;</button>
+      </div>
+
+      <form id="form-update-weight" onsubmit="handleUpdateWeightSubmit(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="input-edit-weight" class="form-label">Your Current Weight (kg)</label>
+            <div class="input-wrapper">
+              <input type="number" id="input-edit-weight" min="30" max="250" step="0.5" required>
+              <span class="input-unit">kg</span>
+            </div>
+            <p class="field-help">New daily target will be: <strong id="modal-target-preview">2,450 ml</strong></p>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-light" onclick="closeModal('modal-weight')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Goal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
